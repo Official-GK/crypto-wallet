@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+python-jose[cryptography]
+pydantic
+passlib[bcrypt]
+web3
+eth-account

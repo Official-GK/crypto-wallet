@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+motor
+redis
+passlib
+bcrypt==3.2.2
+python-jose[cryptography]
+pydantic[email]

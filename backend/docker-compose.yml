@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  # --- Infrastructure ---
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: crypto_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d crypto_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # --- Microservices ---
+  api-gateway:
+    build: .
+    command: uvicorn api_gateway.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - auth-service
+
+  auth-service:
+    build: .
+    command: uvicorn auth_service.main:app --host 0.0.0.0 --port 8001
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - SMTP_EMAIL=${SMTP_EMAIL}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  wallet-service:
+    build: .
+    command: uvicorn wallet_service.main:app --host 0.0.0.0 --port 8002
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  transaction-service:
+    build: .
+    command: uvicorn transaction_service.main:app --host 0.0.0.0 --port 8003
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - SMTP_EMAIL=${SMTP_EMAIL}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  market-service:
+    build: .
+    command: uvicorn market_service.main:app --host 0.0.0.0 --port 8004
+    depends_on:
+      - redis
+
+  staking-service:
+    build: .
+    command: uvicorn staking_service.main:app --host 0.0.0.0 --port 8005
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  blockchain-service:
+    build: .
+    command: uvicorn blockchain_service.main:app --host 0.0.0.0 --port 8006
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  security-service:
+    build: .
+    command: uvicorn security_service.main:app --host 0.0.0.0 --port 8007
+    depends_on:
+      - mongodb
+
+  fraud-service:
+    build: .
+    command: uvicorn fraud_service.main:app --host 0.0.0.0 --port 8008
+    depends_on:
+      - mongodb
+
+  notification-service:
+    build: .
+    command: uvicorn notification_service.main:app --host 0.0.0.0 --port 8009
+    depends_on:
+      - mongodb
+
+  worker-main:
+    build: .
+    command: python -u -m worker.main
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      mongodb:
+        condition: service_started
+
+  worker-block-listener:
+    build: .
+    command: python -u -m worker.block_listener
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      mongodb:
+        condition: service_started

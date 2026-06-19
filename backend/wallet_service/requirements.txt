@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+aio_pika
+python-jose[cryptography]
+pydantic
+web3
+eth-account
+passlib[bcrypt]

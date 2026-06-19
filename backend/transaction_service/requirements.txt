@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+aio_pika
+redis
+python-jose[cryptography]
+pydantic
+passlib[bcrypt]
+web3

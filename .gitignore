@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+.DS_Store
+backend/tests/__pycache__/
+backend/*/__pycache__/

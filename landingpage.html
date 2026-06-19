@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypto Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #2bd0b9;
+            --primary-dark: #1b9e8c;
+            --text-dark: #1a1a18;
+            --text-mid: #4b5563;
+            --text-light: #9ca3af;
+            --bg-light: #ffffff;
+            --bg-alt: #f8fafc;
+            --bg-tint: #f0fdfa; /* light teal tint */
+            --accent-green: #22c55e;
+            --accent-orange: #f59e0b;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ─── Typography ─── */
+        h1, h2, h3 { font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+        .text-primary { color: var(--primary); }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: var(--bg-tint);
+            color: var(--primary);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+        }
+
+        /* ─── Buttons ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(43, 208, 185, 0.3);
+        }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        
+        .app-btn {
+            display: inline-flex;
+            align-items: center;
+            background: black;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            gap: 10px;
+        }
+        .app-btn svg { width: 24px; height: 24px; fill: white; }
+        .app-btn .text-sm { font-size: 10px; line-height: 1; color: #a1a1aa; }
+        .app-btn .text-lg { font-size: 16px; font-weight: 600; line-height: 1.2; }
+
+        /* ─── Header ─── */
+        header {
+            padding: 24px 0;
+            position: relative;
+            z-index: 10;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-icon svg { width: 20px; height: 20px; stroke: white; }
+        .logo-text { line-height: 1.1; }
+        .logo-text .top { font-size: 14px; font-weight: 800; color: var(--text-dark); letter-spacing: 0.5px;}
+        .logo-text .bot { font-size: 14px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px;}
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        .nav-links a {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* ─── Hero Section ─── */
+        .hero {
+            padding: 60px 0 100px;
+            position: relative;
+        }
+        .hero-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+        }
+        .hero-content {
+            flex: 1;
+            max-width: 540px;
+        }
+        .hero h1 {
+            font-size: 56px;
+            margin-bottom: 24px;
+        }
+        .hero p {
+            font-size: 18px;
+            color: var(--text-mid);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+        
+        .hero-qr-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 32px;
+        }
+        .qr-code {
+            text-align: center;
+        }
+        .qr-code-wrapper {
+            width: 140px;
+            height: 140px;
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 10px;
+            margin: 0 auto 12px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .qr-code-wrapper svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .qr-code span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-mid);
+        }
+        .hero-apps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-top: 10px;
+        }
+        .hero-apps .buttons { display: flex; gap: 12px; }
+        .hero-rating {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-mid);
+            font-weight: 500;
+            margin-top: 16px;
+        }
+        .stars { color: var(--primary); font-size: 16px; letter-spacing: 2px;}
+
+        /* Hero Visuals */
+        .hero-visuals {
+            flex: 1;
+            position: relative;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Phone Mockup CSS Component */
+        .phone-mockup {
+            width: 280px;
+            height: 580px;
+            background: white;
+            border-radius: 44px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 10px #f8fafc inset, 0 0 0 12px #e2e8f0 inset;
+            border: 8px solid #f8fafc;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+        .phone-mockup.secondary {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            transform: scale(0.85);
+            z-index: 1;
+            opacity: 0.9;
+        }
+        .phone-content {
+            padding: 40px 20px 20px;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .mock-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;}
+        .mock-user { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600;}
+        .mock-user img { width: 24px; height: 24px; border-radius: 50%; background: #eee;}
+        .mock-balance { text-align: center; margin-bottom: 24px; }
+        .mock-balance-title { font-size: 11px; color: var(--text-light); margin-bottom: 4px; }
+        .mock-balance-val { font-size: 32px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+        .mock-balance-change { font-size: 11px; color: var(--primary); font-weight: 600; }
+        
+        .mock-actions { display: flex; justify-content: center; gap: 16px; margin-bottom: 32px; }
+        .mock-action { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; color: var(--text-mid);}
+        .mock-action-icon { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-tint); color: var(--primary); display: flex; align-items: center; justify-content: center;}
+        
+        .mock-list-title { font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .mock-list-title span:last-child { font-weight: 500; color: var(--text-light); font-size: 10px; }
+        .mock-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .mock-item-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: bold;}
+        .mock-item-icon.btc { background: var(--accent-orange); }
+        .mock-item-icon.eth { background: #627eea; }
+        .mock-item-icon.usdt { background: var(--primary); }
+        .mock-item-info { flex: 1; }
+        .mock-item-name { font-size: 12px; font-weight: 700; }
+        .mock-item-sub { font-size: 10px; color: var(--text-light); }
+        .mock-item-right { text-align: right; }
+
+        /* Floating elements */
+        .float-icon {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            z-index: 3;
+            animation: float 6s ease-in-out infinite;
+        }
+        .float-icon.btc { background: var(--accent-orange); top: 20%; left: -20px; animation-delay: 0s;}
+        .float-icon.eth { background: #627eea; bottom: 30%; right: -30px; animation-delay: 1s;}
+        .float-icon.usdt { background: var(--primary); top: 40%; right: 40px; animation-delay: 2s;}
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Trusted By */
+        .trusted {
+            text-align: center;
+            padding: 60px 0;
+            border-top: 1px solid #f1f5f9;
+        }
+        .trusted p { font-size: 14px; color: var(--text-light); font-weight: 500; margin-bottom: 32px; position: relative; display: inline-block;}
+        .trusted p::before, .trusted p::after { content: ''; position: absolute; top: 50%; width: 60px; height: 1px; background: #e2e8f0; }
+        .trusted p::before { left: -80px; }
+        .trusted p::after { right: -80px; }
+        .trusted-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            opacity: 0.6;
+            filter: grayscale(100%);
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--text-mid);
+        }
+
+        /* ─── Security Section ─── */
+        .security {
+            padding: 100px 0;
+            background: var(--bg-alt);
+        }
+        .security-inner {
+            display: flex;
+            align-items: center;
+            gap: 80px;
+        }
+        .sec-content { flex: 1; }
+        .sec-content h2 { font-size: 48px; margin-bottom: 24px; }
+        .sec-content p.lead { font-size: 18px; color: var(--text-mid); margin-bottom: 40px; }
+        
+        .checklist { margin-bottom: 48px; }
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .checklist li svg { width: 24px; height: 24px; color: var(--primary); flex-shrink: 0;}
+
+        .sec-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .sec-item { text-align: center; }
+        .sec-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            color: var(--primary);
+        }
+        .sec-item h4 { font-size: 14px; font-weight: 700; }
+
+        .sec-visuals {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ─── All-in-One Features ─── */
+        .features {
+            padding: 100px 0;
+            text-align: center;
+        }
+        .features h2 { font-size: 48px; margin-bottom: 20px; }
+        .features p.lead { font-size: 18px; color: var(--text-mid); max-width: 600px; margin: 0 auto 60px; }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 24px;
+        }
+        .feat-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 24px;
+            padding: 32px 20px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .feat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+        .feat-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: var(--bg-tint);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        .feat-icon svg { width: 32px; height: 32px; stroke-width: 1.5; }
+        .feat-card h3 { font-size: 16px; margin-bottom: 12px; }
+        .feat-card p { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+
+        /* ─── Support Section ─── */
+        .support {
+            padding: 100px 0;
+            background: var(--bg-alt);
+        }
+        .support-inner {
+            display: flex;
+            align-items: center;
+            gap: 80px;
+        }
+        .sup-content { flex: 1; }
+        .sup-content h2 { font-size: 48px; margin-bottom: 24px; }
+        .sup-content p.lead { font-size: 18px; color: var(--text-mid); margin-bottom: 48px; max-width: 400px;}
+        
+        .sup-list { display: flex; flex-direction: column; gap: 32px; }
+        .sup-item { display: flex; gap: 20px; }
+        .sup-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .sup-item h4 { font-size: 18px; margin-bottom: 8px; }
+        .sup-item p { font-size: 15px; color: var(--text-mid); }
+
+        .sup-visuals {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ─── Testimonials ─── */
+        .testimonials {
+            padding: 100px 0;
+            text-align: center;
+        }
+        .testimonials h2 { font-size: 48px; margin-bottom: 24px; }
+        .testimonials p.lead { font-size: 18px; color: var(--text-mid); margin-bottom: 60px; }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .test-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .test-header { margin-bottom: 16px; }
+        .test-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+        .test-stars { color: var(--primary); font-size: 12px; }
+        .test-text { font-size: 14px; color: var(--text-mid); margin-bottom: 20px; line-height: 1.6; }
+        .test-date { font-size: 12px; color: var(--text-light); }
+
+        /* ─── CTA Banner ─── */
+        .cta-section {
+            padding: 0 24px 100px;
+        }
+        .cta-banner {
+            background: #f0fdfe;
+            border-radius: 32px;
+            padding: 60px 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #cffafe;
+        }
+        .cta-content { max-width: 500px; position: relative; z-index: 2;}
+        .cta-content h2 { font-size: 40px; margin-bottom: 20px; }
+        .cta-content p { font-size: 16px; color: var(--text-mid); margin-bottom: 40px; }
+        
+        .cta-right {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            position: relative;
+            z-index: 2;
+        }
+        .cta-qr {
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .cta-qr .qr-code-wrapper {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .cta-qr span { font-size: 13px; font-weight: 600; color: var(--text-mid); }
+        
+        .cta-phone-edge {
+            width: 200px;
+            height: 400px;
+            background: white;
+            border-radius: 40px 0 0 40px;
+            position: absolute;
+            right: -80px;
+            top: -20px;
+            box-shadow: -10px 20px 40px rgba(0,0,0,0.1);
+            border: 8px solid #f8fafc;
+            border-right: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* ─── Responsiveness & Media Queries ─── */
+        @media (max-width: 1024px) {
+            .hero-inner {
+                flex-direction: column;
+                text-align: center;
+                gap: 40px;
+            }
+            .hero-content {
+                max-width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .hero h1 {
+                font-size: 40px;
+            }
+            .hero-qr-box {
+                justify-content: center;
+            }
+            .hero-visuals {
+                height: auto;
+                min-height: 500px;
+                width: 100%;
+            }
+            .phone-mockup.secondary {
+                right: 10%;
+            }
+            
+            .security-inner {
+                flex-direction: column;
+                gap: 40px;
+                text-align: center;
+            }
+            .sec-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .checklist {
+                text-align: left;
+                margin: 0 auto 32px;
+                display: inline-block;
+            }
+            .sec-grid {
+                grid-template-columns: repeat(2, 1fr);
+                width: 100%;
+                max-width: 500px;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .support-inner {
+                flex-direction: column-reverse;
+                gap: 40px;
+                text-align: center;
+            }
+            .sup-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .sup-list {
+                text-align: left;
+                max-width: 500px;
+            }
+            
+            .test-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cta-banner {
+                flex-direction: column;
+                padding: 50px 30px;
+                text-align: center;
+                gap: 40px;
+            }
+            .cta-content {
+                max-width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .cta-right {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+                width: 100%;
+            }
+            .cta-phone-edge {
+                position: relative;
+                right: 0;
+                top: 0;
+                width: 240px;
+                height: 480px;
+                border-radius: 40px;
+                border: 8px solid #f8fafc;
+                margin: 0 auto;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            header .btn-primary {
+                display: none;
+            }
+            .header-inner {
+                justify-content: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-qr-box {
+                flex-direction: column;
+                align-items: center;
+                gap: 24px;
+            }
+            .hero-apps .buttons {
+                flex-direction: column;
+            }
+            .cta-content .hero-apps {
+                flex-direction: column !important;
+                align-items: center;
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .sec-grid {
+                grid-template-columns: 1fr;
+            }
+            .trusted-logos {
+                gap: 24px;
+                font-size: 16px;
+            }
+            .cta-banner {
+                padding: 40px 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L3 7v10l9 5 9-5V7z" />
+                        <path d="M12 12l9-5M12 12v10M12 12L3 7" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <div class="top">CRYPTO</div>
+                    <div class="bot">VAULT</div>
+                </div>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="#">Features <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+                <a href="#">Wallet <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+                <a href="#">Security</a>
+                <a href="#">About Us</a>
+                <a href="#">Blog</a>
+                <a href="#">Support <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+            </nav>
+
+            <a href="auth.html" class="btn btn-primary">Get Started</a>
+        </div>
+    </header>
+
+    <section class="hero container">
+        <div class="hero-inner">
+            <div class="hero-content">
+                <h1><span class="text-primary">The Simple & Secure</span><br>Crypto Wallet</h1>
+                <p>Buy, send, receive & trade crypto.<br>All in one secure wallet.</p>
+                
+                <div class="hero-qr-box">
+                    <div class="qr-code">
+                        <div class="qr-code-wrapper">
+                            <svg viewBox="0 0 100 100">
+                                <!-- Top-Left -->
+                                <rect x="0" y="0" width="28" height="28" fill="black"/>
+                                <rect x="4" y="4" width="20" height="20" fill="white"/>
+                                <rect x="8" y="8" width="12" height="12" fill="black"/>
+                                <!-- Top-Right -->
+                                <rect x="72" y="0" width="28" height="28" fill="black"/>
+                                <rect x="76" y="4" width="20" height="20" fill="white"/>
+                                <rect x="80" y="8" width="12" height="12" fill="black"/>
+                                <!-- Bottom-Left -->
+                                <rect x="0" y="72" width="28" height="28" fill="black"/>
+                                <rect x="4" y="76" width="20" height="20" fill="white"/>
+                                <rect x="8" y="80" width="12" height="12" fill="black"/>
+                                <!-- Alignment Bottom-Right -->
+                                <rect x="72" y="72" width="16" height="16" fill="black"/>
+                                <rect x="76" y="76" width="8" height="8" fill="white"/>
+                                <rect x="78" y="78" width="4" height="4" fill="black"/>
+                                <!-- Data Blocks -->
+                                <path d="M32 8h4v4h-4zM40 8h4v4h-4zM48 8h4v4h-4zM56 8h4v4h-4zM64 8h4v4h-4zM8 32h4v4H8zM8 40h4v4H8zM8 48h4v4H8zM8 56h4v4H8zM8 64h4v4H8zM32 20h8v4h-8zM44 16h4v8h-4zM52 24h12v4H52zM60 12h4v8h-4zM20 32h4v12h-4zM28 36h8v4h-8zM40 32h4v8h-4zM48 36h12v4H48zM64 32h8v8h-8zM76 32h4v12h-4zM84 36h12v4H84zM16 48h8v4h-8zM28 44h4v8h-4zM36 48h12v4H36zM52 44h8v12h-8zM68 48h4v4h-4zM76 48h8v8h-8zM88 44h4v12h-4zM20 60h12v4H20zM36 56h4v8h-4zM44 60h8v4h-8zM60 56h4v12h-4zM68 60h16v4H68zM88 60h8v4h-8zM32 68h4v12h-4zM40 72h12v4H40zM56 68h4v8h-4zM64 72h4v16h-4zM32 84h16v4H32zM52 80h4v12h-4zM60 84h8v4h-8zM36 92h8v4h-8zM48 92h12v4H48zM76 92h16v4H76zM92 80h4v8h-4z" fill="black"/>
+                            </svg>
+                        </div>
+                        <span>Scan to Download</span>
+                    </div>
+                    <div class="hero-apps">
+                        <div class="buttons">
+                            <a href="#" class="app-btn">
+                                <svg viewBox="0 0 24 24" fill="white"><path d="M3.609 1.814L13.783 12 3.609 22.186c-.183-.162-.294-.4-.294-.67V2.484c0-.27.111-.508.294-.67zM14.982 13.2l2.843 2.843L4.992 21.6c.559.348 1.258.261 1.748-.066l11.085-6.38-2.843-2.843v.889zM18.847 11.23l-3.324-1.913-2.484 2.484 2.484 2.484 3.324-1.913c.759-.437.759-1.15 0-1.587l.001.001zM14.982 10.8V9.911l2.843-2.843-11.085-6.38c-.49-.327-1.189-.414-1.748-.066L17.825 7.957l-2.843 2.843z" /></svg>
+                                <div><div class="text-sm">GET IT ON</div><div class="text-lg">Google Play</div></div>
+                            </a>
+                            <a href="#" class="app-btn">
+                                <svg viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.56 2.95-1.39z"/></svg>
+                                <div><div class="text-sm">Download on the</div><div class="text-lg">App Store</div></div>
+                            </a>
+                        </div>
+                        <div class="hero-rating">
+                            <span>Rated 4.8/5</span>
+                            <span class="stars">★★★★★</span>
+                            <span>Trusted by 50K+ users</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visuals">
+                <!-- Floating Icons -->
+                <div class="float-icon btc">₿</div>
+                <div class="float-icon eth">⟠</div>
+                <div class="float-icon usdt">₮</div>
+
+                <!-- Secondary Phone (Charts) -->
+                <div class="phone-mockup secondary">
+                    <div class="phone-content">
+                        <div class="mock-header">
+                            <span style="font-size:20px">←</span>
+                            <span style="font-size:20px">ⓘ</span>
+                        </div>
+                        <div class="mock-user" style="justify-content:center; margin-bottom:20px;">
+                            <div class="mock-item-icon btc" style="width:20px;height:20px;font-size:12px;">₿</div>
+                            <span>Bitcoin (BTC)</span>
+                        </div>
+                        <div class="mock-balance">
+                            <div class="mock-balance-val" style="font-size:28px;">$68,420.45</div>
+                            <div class="mock-balance-change">+2.45% (Today)</div>
+                        </div>
+                        <div style="height: 120px; margin-top:30px; border-bottom:1px solid #eee; position:relative;">
+                            <svg viewBox="0 0 100 40" style="width:100%; height:100%; stroke:var(--primary); stroke-width:2; fill:none;">
+                                <polyline points="0,30 20,25 40,35 60,15 80,20 100,5"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Phone (Dashboard) -->
+                <div class="phone-mockup">
+                    <div class="phone-content">
+                        <div class="mock-header">
+                            <div class="mock-user">
+                                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23c97b3a'/></svg>" alt="">
+                                Hi, Olivia 👋
+                            </div>
+                            <div style="display:flex;gap:12px;color:var(--text-light)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                        </div>
+
+                        <div class="mock-balance">
+                            <div class="mock-balance-title">Total Balance</div>
+                            <div class="mock-balance-val">$24,560.80</div>
+                            <div class="mock-balance-change">+8.25% (+$1,872.45) today</div>
+                        </div>
+
+                        <div class="mock-actions">
+                            <div class="mock-action">
+                                <div class="mock-action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></div>
+                                Send
+                            </div>
+                            <div class="mock-action">
+                                <div class="mock-action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                                Receive
+                            </div>
+                            <div class="mock-action">
+                                <div class="mock-action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg></div>
+                                Buy
+                            </div>
+                        </div>
+
+                        <div class="mock-list-title">
+                            <span>My Wallets</span>
+                            <span>View All</span>
+                        </div>
+
+                        <div class="mock-item">
+                            <div class="mock-item-icon btc">₿</div>
+                            <div class="mock-item-info">
+                                <div class="mock-item-name">Bitcoin</div>
+                                <div class="mock-item-sub">BTC</div>
+                            </div>
+                            <div class="mock-item-right">
+                                <div class="mock-item-name">$15,230.45</div>
+                                <div class="mock-item-sub">0.25 BTC</div>
+                            </div>
+                        </div>
+                        <div class="mock-item">
+                            <div class="mock-item-icon eth">⟠</div>
+                            <div class="mock-item-info">
+                                <div class="mock-item-name">Ethereum</div>
+                                <div class="mock-item-sub">ETH</div>
+                            </div>
+                            <div class="mock-item-right">
+                                <div class="mock-item-name">$6,250.12</div>
+                                <div class="mock-item-sub">2.15 ETH</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="trusted">
+            <p>Trusted by industry leaders</p>
+            <div class="trusted-logos">
+                <span>CoinDesk</span>
+                <span>Cointelegraph</span>
+                <span>Forbes</span>
+                <span>BINANCE</span>
+                <span>Blockchain.com</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section class="security">
+        <div class="container security-inner">
+            <div class="sec-content">
+                <div class="badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    BANK-GRADE SECURITY
+                </div>
+                <h2>Crypto Wallet Security<br><span class="text-primary">Like Never Before</span></h2>
+                <p class="lead">Your security is our top priority. Crypto Vault uses industry-leading security standards to keep your assets safe.</p>
+                
+                <ul class="checklist">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> End-to-end encryption keeps your data and assets private</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Multi-layer 2FA authentication for extra protection</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Non-custodial wallet - you control your keys, you control your crypto</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Real-time threat detection and transaction monitoring</li>
+                </ul>
+
+                <div class="sec-grid">
+                    <div class="sec-item">
+                        <div class="sec-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+                        <h4>Bank-Grade<br>Encryption</h4>
+                    </div>
+                    <div class="sec-item">
+                        <div class="sec-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                        <h4>2FA<br>Protection</h4>
+                    </div>
+                    <div class="sec-item">
+                        <div class="sec-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg></div>
+                        <h4>Non-Custodial<br>Wallet</h4>
+                    </div>
+                    <div class="sec-item">
+                        <div class="sec-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+                        <h4>Real-time<br>Monitoring</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sec-visuals">
+                <div class="phone-mockup" style="transform: scale(0.95);">
+                    <div class="phone-content">
+                        <!-- Same phone UI content as above, omitting details for brevity -->
+                        <div class="mock-header">
+                            <div class="mock-user">
+                                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23c97b3a'/></svg>" alt="">
+                            </div>
+                        </div>
+                        <div class="mock-balance">
+                            <div class="mock-balance-title">Total Balance</div>
+                            <div class="mock-balance-val">$24,560.80</div>
+                            <div class="mock-balance-change">+8.25% (+$1,872.45) today</div>
+                        </div>
+                        <div class="mock-actions">
+                            <div class="mock-action">
+                                <div class="mock-action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></div>Send
+                            </div>
+                            <div class="mock-action">
+                                <div class="mock-action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>Receive
+                            </div>
+                            <div class="mock-action">
+                                <div class="mock-action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg></div>Buy
+                            </div>
+                        </div>
+                        <div class="mock-list-title"><span>My Assets</span><span>View All</span></div>
+                        <div class="mock-item">
+                            <div class="mock-item-icon btc">₿</div>
+                            <div class="mock-item-info"><div class="mock-item-name">Bitcoin</div><div class="mock-item-sub">BTC</div></div>
+                            <div class="mock-item-right"><div class="mock-item-name">$15,230.45</div><div class="mock-item-sub">0.25 BTC</div></div>
+                        </div>
+                        <div class="mock-item">
+                            <div class="mock-item-icon eth">⟠</div>
+                            <div class="mock-item-info"><div class="mock-item-name">Ethereum</div><div class="mock-item-sub">ETH</div></div>
+                            <div class="mock-item-right"><div class="mock-item-name">$6,250.12</div><div class="mock-item-sub">2.15 ETH</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All-in-One Section -->
+    <section class="features container">
+        <div class="badge" style="margin: 0 auto 24px;">ALL-IN-ONE WALLET</div>
+        <h2>Everything You Need in <span class="text-primary">One Wallet</span></h2>
+        <p class="lead">Send, receive, store, trade and earn - all in one simple and secure platform.</p>
+
+        <div class="features-grid">
+            <div class="feat-card">
+                <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                <h3>Send & Receive</h3>
+                <p>Send and receive crypto instantly, anywhere in the world.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="21" y1="21" x2="4" y2="4"/></svg></div>
+                <h3>Buy & Sell</h3>
+                <p>Buy crypto with your card or bank transfer. Sell in seconds.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <h3>Trade</h3>
+                <p>Trade 1000+ crypto assets with low fees and deep liquidity.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></div>
+                <h3>Earn & Stake</h3>
+                <p>Stake your crypto and earn up to 12% APY rewards.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                <h3>NFTs</h3>
+                <p>Store, send and manage your NFTs in one secure place.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
+                <h3>Portfolio Tracking</h3>
+                <p>Track your portfolio in real-time and make smarter decisions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section class="support">
+        <div class="container support-inner">
+            <div class="sup-content">
+                <div class="badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    TRUSTED BY THOUSANDS
+                </div>
+                <h2>Built for You 24/7:<br><span class="text-primary">We've Got Your Back</span></h2>
+                <p class="lead">Our support team is always here to help you, anytime you need us.</p>
+                
+                <div class="sup-list">
+                    <div class="sup-item">
+                        <div class="sup-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+                        <div>
+                            <h4>24/7 Live Support</h4>
+                            <p>Get help whenever you need it from our expert team.</p>
+                        </div>
+                    </div>
+                    <div class="sup-item">
+                        <div class="sup-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+                        <div>
+                            <h4>Fast Response</h4>
+                            <p>We respond quickly to resolve your queries.</p>
+                        </div>
+                    </div>
+                    <div class="sup-item">
+                        <div class="sup-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg></div>
+                        <div>
+                            <h4>Secure & Reliable</h4>
+                            <p>Your security and satisfaction are our top priority.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sup-visuals">
+                <div class="phone-mockup">
+                    <!-- Chat mockup -->
+                    <div class="phone-content" style="padding: 20px 10px;">
+                        <div style="display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;padding-bottom:12px;margin-bottom:20px;">
+                            <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;">S</div>
+                            <div>
+                                <div style="font-size:13px;font-weight:700;">Support</div>
+                                <div style="font-size:10px;color:var(--accent-green);">● Online</div>
+                            </div>
+                        </div>
+                        <div style="background:var(--primary);color:white;padding:12px;border-radius:16px 16px 4px 16px;margin-left:auto;max-width:80%;font-size:12px;margin-bottom:16px;">
+                            Hi, I need help with a transaction.
+                        </div>
+                        <div style="background:#f1f5f9;color:var(--text-dark);padding:12px;border-radius:16px 16px 16px 4px;margin-right:auto;max-width:80%;font-size:12px;margin-bottom:16px;">
+                            Hello! 👋<br>How can we assist you today?
+                        </div>
+                        <div style="background:var(--primary);color:white;padding:12px;border-radius:16px 16px 4px 16px;margin-left:auto;max-width:80%;font-size:12px;margin-bottom:16px;">
+                            My transaction is pending. Can you help?
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials container">
+        <div class="badge" style="margin: 0 auto 24px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            LOVED BY OUR COMMUNITY
+        </div>
+        <h2>We 💚 our customers<br>and our customers 💚 that.</h2>
+        <p class="lead" style="max-width:500px;margin:0 auto 40px;">They gave the Crypto Vault 4.8 stars in the App Store and on Google Play</p>
+        
+        <div style="font-size: 24px; color: var(--accent-green); margin-bottom: 40px; font-weight:700;">
+            <span style="font-size:16px;color:var(--text-dark);font-weight:600;margin-right:10px;">Excellent</span>
+            ★★★★★
+            <span style="font-size:14px;color:var(--text-mid);font-weight:500;margin-left:10px;">4.8 out of 5</span>
+        </div>
+
+        <div class="test-grid">
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-name">James T.</div>
+                    <div class="test-stars">★★★★★</div>
+                </div>
+                <div class="test-text">Super easy to use and very secure. I love the clean interface and fast transactions!</div>
+                <div class="test-date">2 days ago</div>
+            </div>
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-name">Sophia M.</div>
+                    <div class="test-stars">★★★★★</div>
+                </div>
+                <div class="test-text">The best crypto wallet I've used so far. Support is amazing and my funds always feel safe.</div>
+                <div class="test-date">1 week ago</div>
+            </div>
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-name">Michael R.</div>
+                    <div class="test-stars">★★★★★</div>
+                </div>
+                <div class="test-text">Staking and portfolio tracking in one place is a game changer. Highly recommended!</div>
+                <div class="test-date">2 weeks ago</div>
+            </div>
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-name">Daniel K.</div>
+                    <div class="test-stars">★★★★★</div>
+                </div>
+                <div class="test-text">Smooth experience across all devices. Never had any issues transferring crypto.</div>
+                <div class="test-date">3 weeks ago</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section container">
+        <div class="cta-banner">
+            <div class="cta-content">
+                <div class="badge" style="background:white; margin-bottom:16px;">🚀 GET STARTED NOW</div>
+                <h2>Download Crypto Vault and Take Control of Your Crypto</h2>
+                <p>Join thousands of users who trust Crypto Vault for a simple, secure and smarter crypto experience.</p>
+                <div class="hero-apps" style="flex-direction:row;">
+                    <a href="#" class="app-btn">
+                        <svg viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.56 2.95-1.39z"/></svg>
+                        <div><div class="text-sm">Download on the</div><div class="text-lg">App Store</div></div>
+                    </a>
+                    <a href="#" class="app-btn">
+                        <svg viewBox="0 0 24 24" fill="white"><path d="M3.609 1.814L13.783 12 3.609 22.186c-.183-.162-.294-.4-.294-.67V2.484c0-.27.111-.508.294-.67zM14.982 13.2l2.843 2.843L4.992 21.6c.559.348 1.258.261 1.748-.066l11.085-6.38-2.843-2.843v.889zM18.847 11.23l-3.324-1.913-2.484 2.484 2.484 2.484 3.324-1.913c.759-.437.759-1.15 0-1.587l.001.001zM14.982 10.8V9.911l2.843-2.843-11.085-6.38c-.49-.327-1.189-.414-1.748-.066L17.825 7.957l-2.843 2.843z" /></svg>
+                        <div><div class="text-sm">GET IT ON</div><div class="text-lg">Google Play</div></div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="cta-right">
+                <div class="cta-qr">
+                    <div class="qr-code-wrapper">
+                        <svg viewBox="0 0 100 100">
+                            <!-- Top-Left -->
+                            <rect x="0" y="0" width="28" height="28" fill="black"/>
+                            <rect x="4" y="4" width="20" height="20" fill="white"/>
+                            <rect x="8" y="8" width="12" height="12" fill="black"/>
+                            <!-- Top-Right -->
+                            <rect x="72" y="0" width="28" height="28" fill="black"/>
+                            <rect x="76" y="4" width="20" height="20" fill="white"/>
+                            <rect x="80" y="8" width="12" height="12" fill="black"/>
+                            <!-- Bottom-Left -->
+                            <rect x="0" y="72" width="28" height="28" fill="black"/>
+                            <rect x="4" y="76" width="20" height="20" fill="white"/>
+                            <rect x="8" y="80" width="12" height="12" fill="black"/>
+                            <!-- Alignment Bottom-Right -->
+                            <rect x="72" y="72" width="16" height="16" fill="black"/>
+                            <rect x="76" y="76" width="8" height="8" fill="white"/>
+                            <rect x="78" y="78" width="4" height="4" fill="black"/>
+                            <!-- Data Blocks -->
+                            <path d="M32 8h4v4h-4zM40 8h4v4h-4zM48 8h4v4h-4zM56 8h4v4h-4zM64 8h4v4h-4zM8 32h4v4H8zM8 40h4v4H8zM8 48h4v4H8zM8 56h4v4H8zM8 64h4v4H8zM32 20h8v4h-8zM44 16h4v8h-4zM52 24h12v4H52zM60 12h4v8h-4zM20 32h4v12h-4zM28 36h8v4h-8zM40 32h4v8h-4zM48 36h12v4H48zM64 32h8v8h-8zM76 32h4v12h-4zM84 36h12v4H84zM16 48h8v4h-8zM28 44h4v8h-4zM36 48h12v4H36zM52 44h8v12h-8zM68 48h4v4h-4zM76 48h8v8h-8zM88 44h4v12h-4zM20 60h12v4H20zM36 56h4v8h-4zM44 60h8v4h-8zM60 56h4v12h-4zM68 60h16v4H68zM88 60h8v4h-8zM32 68h4v12h-4zM40 72h12v4H40zM56 68h4v8h-4zM64 72h4v16h-4zM32 84h16v4H32zM52 80h4v12h-4zM60 84h8v4h-8zM36 92h8v4h-8zM48 92h12v4H48zM76 92h16v4H76zM92 80h4v8h-4z" fill="black"/>
+                        </svg>
+                    </div>
+                    <span>Scan to Download</span>
+                </div>
+                
+                <div class="cta-phone-edge">
+                    <div class="phone-content" style="padding: 24px 16px;">
+                        <div class="mock-header" style="margin-bottom: 16px;">
+                            <div class="mock-user">
+                                <div class="logo-icon" style="width:20px;height:20px;border-radius:4px;background:var(--primary);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="width:12px;height:12px;"><path d="M12 2L3 7v10l9 5 9-5V7z" /><path d="M12 12l9-5M12 12v10M12 12L3 7" /></svg></div>
+                                <span>Vault</span>
+                            </div>
+                        </div>
+                        <div class="mock-balance" style="margin-bottom: 20px; text-align: left;">
+                            <div class="mock-balance-title" style="font-size: 10px;">Total Wallet Balance</div>
+                            <div class="mock-balance-val" style="font-size: 20px; margin-bottom: 2px;">$28,420.00</div>
+                            <div class="mock-balance-change" style="font-size: 10px; color: var(--accent-green);">+12.4% (+$3,120.45)</div>
+                        </div>
+                        
+                        <div class="mock-list-title" style="font-size: 10px; margin-bottom: 8px;">Activity</div>
+                        
+                        <div class="mock-item" style="margin-bottom: 12px; gap: 8px;">
+                            <div class="mock-item-icon btc" style="width: 24px; height: 24px; font-size: 12px;">₿</div>
+                            <div class="mock-item-info">
+                                <div class="mock-item-name" style="font-size: 10px;">Received Bitcoin</div>
+                                <div class="mock-item-sub" style="font-size: 8px;">BTC Wallet</div>
+                            </div>
+                            <div class="mock-item-right">
+                                <div class="mock-item-name" style="font-size: 10px; color: var(--accent-green);">+0.05 BTC</div>
+                            </div>
+                        </div>
+                        <div class="mock-item" style="margin-bottom: 12px; gap: 8px;">
+                            <div class="mock-item-icon eth" style="width: 24px; height: 24px; font-size: 12px;">⟠</div>
+                            <div class="mock-item-info">
+                                <div class="mock-item-name" style="font-size: 10px;">Sent Ethereum</div>
+                                <div class="mock-item-sub" style="font-size: 8px;">ETH Wallet</div>
+                            </div>
+                            <div class="mock-item-right">
+                                <div class="mock-item-name" style="font-size: 10px;">-0.5 ETH</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

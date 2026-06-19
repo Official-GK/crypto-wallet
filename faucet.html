@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Faucet - CryptoVault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f1115;
+            --surface-color: #1a1c23;
+            --primary: #d4f042;
+            --text-main: #f3f4f6;
+            --text-mid: #9ca3af;
+            --border-color: rgba(255,255,255,0.08);
+            --radius-lg: 16px;
+        }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        body { background: var(--bg-dark); color: var(--text-main); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .faucet-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg); width: 100%; max-width: 440px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .title { font-size: 24px; font-weight: 700; margin-bottom: 8px; text-align: center; }
+        .subtitle { font-size: 14px; color: var(--text-mid); text-align: center; margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-mid); margin-bottom: 8px; }
+        .form-input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; color: white; font-size: 15px; outline: none; }
+        .form-input:focus { border-color: rgba(255,255,255,0.2); }
+        .submit-btn { width: 100%; background: var(--primary); color: #000; font-weight: 600; border: none; border-radius: 8px; padding: 14px; font-size: 15px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .submit-btn:hover { background: #bfe032; }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .message { padding: 12px; border-radius: 8px; font-size: 14px; margin-top: 16px; display: none; text-align: center; }
+        .message.success { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); display: block; }
+        .message.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); display: block; }
+        .back-link { display: block; text-align: center; margin-top: 24px; color: var(--text-mid); font-size: 13px; text-decoration: none; }
+        .back-link:hover { color: white; }
+    </style>
+</head>
+<body>
+
+<div class="faucet-card">
+    <div class="title">Admin Faucet 🚰</div>
+    <div class="subtitle">Directly inject funds into any local wallet</div>
+
+    <div class="form-group">
+        <label>Target Wallet Address</label>
+        <select id="faucet-address-select" class="form-input" style="margin-bottom:8px">
+            <option value="">-- Select from your wallets --</option>
+        </select>
+        <input type="text" id="faucet-address" class="form-input" placeholder="Or paste manually: 0x123abc..." autocomplete="off">
+    </div>
+    
+    <div class="form-group">
+        <label>Asset Symbol</label>
+        <select id="faucet-asset" class="form-input">
+            <option value="ETH">ETH (Ethereum)</option>
+            <option value="BTC">BTC (Bitcoin)</option>
+            <option value="SOL">SOL (Solana)</option>
+            <option value="USDT">USDT (Tether)</option>
+            <option value="USDC">USDC (USD Coin)</option>
+            <option value="MATIC">MATIC (Polygon)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Amount to Deposit</label>
+        <input type="number" id="faucet-amount" class="form-input" placeholder="0.0" step="0.01">
+    </div>
+
+    <button id="faucet-btn" class="submit-btn">Deposit Funds</button>
+    <div id="faucet-msg" class="message"></div>
+
+    <a href="index.html" class="back-link">← Back to Dashboard</a>
+</div>
+
+<script src="api.js"></script>
+<script>
+    // Pre-populate dropdown
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const rawWallets = await window.api.fetchUserWallets();
+            if (rawWallets && rawWallets.length) {
+                const select = document.getElementById('faucet-address-select');
+                rawWallets.forEach(w => {
+                    const opt = document.createElement('option');
+                    opt.value = w.public_address;
+                    opt.textContent = w.public_address.slice(0, 8) + "..." + w.public_address.slice(-6);
+                    select.appendChild(opt);
+                });
+                select.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        document.getElementById('faucet-address').value = e.target.value;
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Not logged in or failed to fetch wallets.");
+        }
+    });
+
+    document.getElementById('faucet-btn').addEventListener('click', async () => {
+        const address = document.getElementById('faucet-address').value.trim();
+        const asset = document.getElementById('faucet-asset').value;
+        const amount = parseFloat(document.getElementById('faucet-amount').value);
+        const btn = document.getElementById('faucet-btn');
+        const msgEl = document.getElementById('faucet-msg');
+
+        if (!address || isNaN(amount) || amount <= 0) {
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Please enter a valid address and positive amount.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        msgEl.className = 'message';
+
+        try {
+            const response = await fetch('http://localhost:8000/admin/faucet-fund', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address, asset_symbol: asset, amount })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.detail || data.message || 'Deposit failed');
+
+            msgEl.className = 'message success';
+            msgEl.textContent = data.message || `Successfully deposited ${amount} ${asset}!`;
+            document.getElementById('faucet-amount').value = '';
+            
+        } catch (err) {
+            msgEl.className = 'message error';
+            msgEl.textContent = err.message;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Deposit Funds';
+        }
+    });
+</script>
+
+</body>
+</html>
